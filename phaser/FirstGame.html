@@ -16,7 +16,7 @@
 
 var config = {
     type: Phaser.AUTO,
-    width: 1000,
+    width: 800,
     height: 600,
     physics: {
         default: 'arcade',
@@ -72,32 +72,32 @@ function create ()
     platforms.create(600, 400, 'ground');
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
-    platforms.create(400, 250, 'ground');
+    //for testing continue walk right
+    // platforms.create(400, 250, 'ground');
 
     // The player and its settings
     player = this.physics.add.sprite(600, 150, 'dude');
-    girlPlayer = this.physics.add.sprite(100, 450, 'girl');
-    girlPlayerR = this.physics.add.sprite(100, 450, 'girl');
+    // girlPlayer = this.physics.add.sprite(100, 450, 'girl');
+    // girlPlayerR = this.physics.add.sprite(100, 450, 'girl');
 
-    girlPlayerR.flipX=true;
 
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
-    girlPlayer.setBounce(0.2);
-    girlPlayer.setCollideWorldBounds(true);
+    // girlPlayer.setBounce(0.2);
+    // girlPlayer.setCollideWorldBounds(true);
 
-    girlPlayerR.setBounce(0.2);
-    girlPlayerR.setCollideWorldBounds(true);
+    // girlPlayerR.setBounce(0.2);
+    // girlPlayerR.setCollideWorldBounds(true);
 
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('girl', { start: 0, end: 3 }),
-        frameRate: 5,
+        frames: this.anims.generateFrameNumbers('girl', { start: 1, end: 3 }),
+        frameRate: 7,
         repeat: -1
     });
 
@@ -107,18 +107,11 @@ function create ()
         frameRate: 20
     });
 
-    // this.anims.create({
-    //     key: 'right',
-    //     frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-    //     frameRate: 10,
-    //     repeat: -1
-    // });
-
     // for girlPlayer
     this.anims.create({
         key: 'right',
         frames: this.anims.generateFrameNumbers('girl', { start: 1, end: 3 }),
-        frameRate: 5,
+        frameRate: 7,
         repeat: -1
     });
 
@@ -148,8 +141,8 @@ function create ()
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
-    this.physics.add.collider(girlPlayer, platforms);
-    this.physics.add.collider(girlPlayerR, platforms);
+    // this.physics.add.collider(girlPlayer, platforms);
+    // this.physics.add.collider(girlPlayerR, platforms);
     
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
@@ -170,12 +163,17 @@ function update ()
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
+        player.flipX=true;
+
+        
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
 
         player.anims.play('right', true);
+        player.flipX=false;
+
     }
     else
     {
