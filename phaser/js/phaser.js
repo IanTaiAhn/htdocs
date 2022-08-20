@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -45,22 +45,15 @@ function create ()
     var background = this.add.image(800, 100, 'sky');
     background.setScale(2, 1);
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    var platforms = this.physics.add.staticGroup();
-
-    //  Here we create the ground.
-
     // green rectangle, will replace with actual ground, and assests, and such.
+    var platforms = this.physics.add.staticGroup();
     platforms.create(800, 870, 'ground').setScale(4, 30).refreshBody();
 
+    // the actual colliders seperating the player from the sky, and the edge of the screen.
     var groundCollider = this.physics.add.staticGroup();
-    groundCollider.create(100, 1056).setScale(100, 10).refreshBody();
-
-    //  Now let's create some ledges
-    // platforms.create(600, 400, 'ground');
-    // platforms.create(50, 250, 'ground');
-    // platforms.create(150, 420, 'ground');
-
+    groundCollider.create(1, 1056).setScale(100, 10).refreshBody();
+    groundCollider.create(1, 400).setScale(100, 1).refreshBody();
+    
     // The player and its settings
     player = this.physics.add.sprite(600, 1050, 'dude');
 
@@ -91,85 +84,77 @@ function create ()
 
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
+    this.physics.add.collider(player, groundCollider);
+
 
     //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 130 }
-    });
+    // stars = this.physics.add.group({
+    //     key: 'star',
+    //     repeat: 11,
+    //     setXY: { x: 12, y: 0, stepX: 130 }
+    // });
+    
+    // stars.children.iterate(function (child) {
+    // });
 
-    stars.children.iterate(function (child) {
-
-        //  Give each star a slightly different bounce
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-    });
-
-    bombs = this.physics.add.group();
+    // bombs = this.physics.add.group();
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    // scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
-    this.physics.add.collider(player, groundCollider);
-    this.physics.add.collider(stars, groundCollider);
-    this.physics.add.collider(bombs, groundCollider);
-    // this.physics.add.collider(girlPlayer, platforms);
-    // this.physics.add.collider(girlPlayerR, platforms);
-    
+    // this.physics.add.collider(bombs, groundCollider);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(player, stars, collectStar, null, this);
-
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
+    // this.physics.add.overlap(player, stars, collectStar, null, this);
+    // this.physics.add.collider(player, bombs, hitBomb, null, this);
 }
 
 function update ()
 {
-    if (gameOver)
-    {
-        return;
-    }
+    // if (gameOver)
+    // {
+    //     return;
+    // }
 
-
-
-
-    // move left
+    // TODO Bug that doesn't allow player to move right if left button is pressed down.
+    // moves player left
     if (cursors.left.isDown)    {
-        player.setVelocityX(-300);
+        player.setVelocityX(-200);
         player.anims.play('left', true);
         player.flipX=true;
     } 
+    // moves player right
     else if (cursors.right.isDown)   {
-        player.setVelocityX(300);
+        player.setVelocityX(200);
         player.anims.play('right', true);
         player.flipX=false;
     }
-    else if (cursors.up.isDown)
+    // moves player up
+    if (cursors.up.isDown)
     {
-        player.setVelocityY(-330);
-        player.anims.play('right', true);
-        player.flipX=false;
-    }  
-    else if (cursors.down.isDown)   {
-        player.setVelocityY(300);
-        player.anims.play('left', true);
-        player.flipX=true;
+        player.setVelocityY(-200);
+        // player.anims.play('right', true);
+        // player.flipX=false;
+    }   else    {
+        player.setVelocityY(0);
+    }
+    // moves player down
+    if (cursors.down.isDown)   {
+        player.setVelocityY(200);
+        // player.anims.play('left', true);
+        // player.flipX=true;
     } 
-    else    {
+
+    // keeps player stationary, and in their idle position.
+    if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
         player.anims.play('turn');
     }
-
-
-    
-
-
-
 }
 
+/*
 function collectStar (player, star)
 {
     star.disableBody(true, true);
@@ -182,9 +167,7 @@ function collectStar (player, star)
     {
         //  A new batch of stars to collect
         stars.children.iterate(function (child) {
-
             child.enableBody(true, child.x, 0, true, true);
-
         });
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
@@ -197,7 +180,9 @@ function collectStar (player, star)
 
     }
 }
+*/
 
+/*
 function hitBomb (player, bomb)
 {
     this.physics.pause();
@@ -208,3 +193,4 @@ function hitBomb (player, bomb)
 
     gameOver = true;
 }
+*/
