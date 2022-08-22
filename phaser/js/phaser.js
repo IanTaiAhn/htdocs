@@ -26,6 +26,11 @@ var score = 0;
 var gameOver = false;
 var scoreText;
 
+// background vars
+var background, mainBack, multiBack;
+var cloudsWhite, cloudsWhiteSmall;
+var playerGround;
+
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -34,31 +39,54 @@ function preload ()
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('cloudsmain', 'assets/main_sky_background.png');
+    this.load.image('cloudsmulti', 'assets/multi_clouds_background.png');
+    this.load.image("clouds-white", "assets/clouds-white.png");
+    this.load.image("clouds-white-small", "assets/clouds-white-small.png");
+    this.load.image('forestground', "assets/forest_ground.png");
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
-
 }
 
 function create ()
 {
-    this.cameras.main.setBounds(0,0, 3200, 1800);
-    this.physics.world.setBounds(0,0, 1600, 900);
+    this.cameras.main.setBounds(0,0, 3200, 900);
+    // sets hard world bounds.. Probably better to use this instead of colliders to seperate the player from other things.
+    this.physics.world.setBounds(0,0, 3200, 900);
 
     //  A simple background for our game
-    var background = this.add.image(800, 100, 'sky');
+    background = this.add.image(800, 100, 'sky');
     background.setScale(2, 1);
 
+    // some background testing stuff
+    // mainBack = this.add.image(800, 100, 'cloudsmain');
+    // mainBack.setScale(3,2);
+    // multiBack = this.add.image(800, 100, 'cloudsmulti');
+    // multiBack.setScale(1,1);
+    // mainBack = this.add.tileSprite(800, 100, 1600, 289, 'cloudsmain');
+    // mainBack.setScale(1,2);
+    // multiBack = this.add.tileSprite(800, 100, 1600, 780, 'cloudsmulti');
+
+    // these are transparent pngs
+    cloudsWhite = this.add.tileSprite(800, 200, 1600, 400, "clouds-white");
+    cloudsWhiteSmall = this.add.tileSprite(800, 200, 1600, 400, "clouds-white-small");
+
     // green rectangle, will replace with actual ground, and assests, and such.
-    var platforms = this.physics.add.staticGroup();
-    platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
+    // var platforms = this.physics.add.staticGroup();
+    // platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
+
+    playerGround = this.physics.add.staticGroup();
+    playerGround.create(800, 650, 'forestground').setScale(2,1.5).refreshBody();
 
     // the actual colliders seperating the player from the sky, and the edge of the screen.
     var groundCollider = this.physics.add.staticGroup();
+    // this isn't actually necessary, it is acting as a temporary visual cue.
     groundCollider.create(1, 1056).setScale(100, 10).refreshBody();
-    groundCollider.create(1, 400).setScale(100, 1).refreshBody();
+    // groundCollider.create(1, 400).setScale(100, 1).refreshBody();
     
     // The player and its settings
-    player = this.physics.add.sprite(600, 1050, 'dude');
+    // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
+    player = this.physics.add.sprite(600, 550, 'dude');    // creates him near the top
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
@@ -113,20 +141,20 @@ function update ()
     // moves player left
     // const cam = this.cameras.main;
     if (cursors.left.isDown)    {
-        player.setVelocityX(-200);
+        player.setVelocityX(-300);
         player.anims.play('left', true);
         player.flipX=true;
     } 
     // moves player right
     else if (cursors.right.isDown)   {
-        player.setVelocityX(200);
+        player.setVelocityX(300);
         player.anims.play('right', true);
         player.flipX=false;
     }
     // moves player up
     if (cursors.up.isDown)
     {
-        player.setVelocityY(-200);
+        player.setVelocityY(-300);
         // player.anims.play('right', true);
         // player.flipX=false;
     }   else    {
@@ -134,7 +162,7 @@ function update ()
     }
     // moves player down
     if (cursors.down.isDown)   {
-        player.setVelocityY(200);
+        player.setVelocityY(300);
         // player.anims.play('left', true);
         // player.flipX=true;
     } 
@@ -145,6 +173,11 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('turn');
     }
+
+    // gives us the parallax effect
+    cloudsWhite.tilePositionX += 0.5;
+    cloudsWhiteSmall.tilePositionX += 0.25;
+
 }
 
 
