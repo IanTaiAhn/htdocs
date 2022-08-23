@@ -17,9 +17,8 @@ var config = {
     }
 };
 
-var player;
-var stars;
-var bombs;
+var player, mob;
+var x;
 // var platforms;
 var cursors;
 var score = 0;
@@ -72,11 +71,11 @@ function create ()
     cloudsWhiteSmall = this.add.tileSprite(800, 200, 1600, 400, "clouds-white-small");
 
     // green rectangle, will replace with actual ground, and assests, and such.
-    // var platforms = this.physics.add.staticGroup();
-    // platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
+    var platforms = this.physics.add.staticGroup();
+    platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
 
-    playerGround = this.physics.add.staticGroup();
-    playerGround.create(800, 650, 'forestground').setScale(2,1.5).refreshBody();
+    // playerGround = this.physics.add.staticGroup();
+    // playerGround.create(800, 650, 'forestground').setScale(2,1.5).refreshBody();
 
     // the actual colliders seperating the player from the sky, and the edge of the screen.
     var groundCollider = this.physics.add.staticGroup();
@@ -87,6 +86,7 @@ function create ()
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
     player = this.physics.add.sprite(600, 550, 'dude');    // creates him near the top
+    mob = this.physics.add.sprite(1200, 350, 'dude');
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
@@ -119,9 +119,9 @@ function create ()
 
     // Camera Work
     // follows the player at the center.
-    this.cameras.main.startFollow(player);
+    // this.cameras.main.startFollow(player);
     // this.cameras.main.followOffset.set(200, 200);
-    this.cameras.main.setZoom(1.5);
+    // this.cameras.main.setZoom(1.5);
 
 
     // interesting bit of code.. WIll study it more.
@@ -130,7 +130,7 @@ function create ()
     // {
     //     game.add.sprite(game.world.randomX, game.world.randomY, 'baddie');
     // }
-
+    mob.setVelocityX(100);
 }
 
 function update ()
@@ -178,6 +178,10 @@ function update ()
     cloudsWhite.tilePositionX += 0.5;
     cloudsWhiteSmall.tilePositionX += 0.25;
 
+    // console.log('working');
+    // console.log(player.x);
+
+    mob.setX(player.x);
 }
 
 
