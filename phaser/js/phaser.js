@@ -45,6 +45,8 @@ function preload ()
     this.load.image('forestground', "assets/forest_ground.png");
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
+    this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
+    
 }
 
 function create ()
@@ -85,7 +87,7 @@ function create ()
     
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
-    player = this.physics.add.sprite(600, 550, 'dude');    // creates him near the top
+    player = this.physics.add.sprite(600, 550, 'girlidle');    // creates him near the top
     mob = this.physics.add.sprite(1200, 350, 'dude');
 
     //  Player physics properties. Give the little guy a slight bounce.
@@ -102,8 +104,8 @@ function create ()
 
     this.anims.create({
         key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
-        frameRate: 20
+        frames: [ { key: 'girlidle' } ],
+        // frameRate: 20
     });
 
     this.anims.create({
@@ -116,6 +118,7 @@ function create ()
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, groundCollider);
+    this.physics.add.collider(player, mob);
 
     // Camera Work
     // follows the player at the center.
@@ -130,7 +133,36 @@ function create ()
     // {
     //     game.add.sprite(game.world.randomX, game.world.randomY, 'baddie');
     // }
-    mob.setVelocityX(100);
+    // mob.setVelocityX(100);
+
+    // var ty = player.y
+    // var tx = player.x
+
+    // // enemy's x, y
+    // var x = mob.x
+    // var y = mob.y
+
+    // var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
+
+    // var curve
+
+    // var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
+
+    // var points = [ player.x, player.y, mob.x, mob.y];
+
+    // var curve = new Phaser.Curves.Spline(points);
+
+    // var graphics = this.add.graphics();
+
+    // graphics.lineStyle(1, 0xffffff, 1);
+
+    // curve.draw(graphics, 64);
+
+    // graphics.fillStyle(0x00ff00, 1);
+
+    // var mobFollow = this.add.follower(curve, player.x, player.y, 'dude');
+    // mobFollow.startFollow(4000);
+
 }
 
 function update ()
@@ -181,7 +213,38 @@ function update ()
     // console.log('working');
     // console.log(player.x);
 
-    mob.setX(player.x);
+    // var ty = player.y
+    // var tx = player.x
+
+    // // enemy's x, y
+    // var x = mob.x
+    // var y = mob.y
+/*
+    var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
+
+    var points = [ player.x, player.y, mob.x, mob.y];
+
+    var curve = new Phaser.Curves.Spline(points);
+
+    // var graphics = this.add.graphics();
+
+    // graphics.lineStyle(1, 0xffffff, 1);
+
+    // curve.draw(graphics, 64);
+
+    // graphics.fillStyle(0x00ff00, 1);
+
+    var mobFollow = this.add.follower(curve, player.x, player.y, 'dude');
+    mobFollow.startFollow(4000);
+*/
+    // mob.setX(player.x);
+    // mob.setY(player.y);
+
+    // mob.rotation = rotation;
+    // mob.setAngle(rotation);
+    // mob.setRotation(rotation);
+    this.physics.accelerateToObject(mob, player, 50, 50, 50);
+
 }
 
 
