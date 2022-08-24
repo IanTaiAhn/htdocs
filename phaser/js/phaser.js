@@ -46,7 +46,9 @@ function preload ()
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
-    this.load.spritesheet('girlslash', 'assets/mush_girl_slash.png', { frameWidth: 90, frameHeight: 102 });
+    this.load.spritesheet('girlslash', 'assets/Slash_0x.png', { frameWidth: 240, frameHeight: 240 });
+    this.load.spritesheet('girl2', 'assets/mush_walk.png', { frameWidth: 240, frameHeight: 240 });
+
 
 }
 
@@ -98,8 +100,8 @@ function create ()
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('girl', { start: 1, end: 3 }),
-        frameRate: 7,
+        frames: this.anims.generateFrameNumbers('girl2', { start: 1, end: 8 }),
+        frameRate: 12,
         repeat: -1
     });
 
@@ -111,15 +113,15 @@ function create ()
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('girl', { start: 1, end: 3 }),
-        frameRate: 7,
+        frames: this.anims.generateFrameNumbers('girl2', { start: 1, end: 8 }),
+        frameRate: 12,
         repeat: -1
     });
 
     this.anims.create({
         key: 'space',
         frames: this.anims.generateFrameNumbers('girlslash', { start: 1, end: 2 }),
-        frameRate: 7,
+        frameRate: 2,
         repeat: -1
     });
 
@@ -195,7 +197,7 @@ function update ()
     if (cursors.up.isDown)
     {
         player.setVelocityY(-300);
-        // player.anims.play('right', true);
+        // player.anims.play('turn', true);
         // player.flipX=false;
     }   else    {
         player.setVelocityY(0);
@@ -203,14 +205,15 @@ function update ()
     // moves player down
     if (cursors.down.isDown)   {
         player.setVelocityY(300);
-        // player.anims.play('left', true);
-
+        // player.anims.play('turn', true);
         // player.flipX=true;
     } 
-    // this is messed up rn
+    
     if (cursors.space.isDown)   {
-        console.log("why");
-        // player.anims.play('space', true);
+        // console.log("why");
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+        player.anims.play('space', true);
     }
     // keeps player stationary, and in their idle position.
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
