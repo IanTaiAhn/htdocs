@@ -46,7 +46,8 @@ function preload ()
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
-    
+    this.load.spritesheet('girlslash', 'assets/mush_girl_slash.png', { frameWidth: 90, frameHeight: 102 });
+
 }
 
 function create ()
@@ -111,6 +112,13 @@ function create ()
     this.anims.create({
         key: 'right',
         frames: this.anims.generateFrameNumbers('girl', { start: 1, end: 3 }),
+        frameRate: 7,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'space',
+        frames: this.anims.generateFrameNumbers('girlslash', { start: 1, end: 2 }),
         frameRate: 7,
         repeat: -1
     });
@@ -196,9 +204,14 @@ function update ()
     if (cursors.down.isDown)   {
         player.setVelocityY(300);
         // player.anims.play('left', true);
+
         // player.flipX=true;
     } 
-
+    // this is messed up rn
+    if (cursors.space.isDown)   {
+        console.log("why");
+        // player.anims.play('space', true);
+    }
     // keeps player stationary, and in their idle position.
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
         player.setVelocityX(0);
