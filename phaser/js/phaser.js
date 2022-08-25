@@ -183,20 +183,20 @@ function update ()
     // moves player left
     // const cam = this.cameras.main;
     if (cursors.left.isDown)    {
-        player.setVelocityX(-300);
+        player.setVelocityX(-250);
         player.anims.play('left', true);
         player.flipX=true;
     } 
     // moves player right
     else if (cursors.right.isDown)   {
-        player.setVelocityX(300);
+        player.setVelocityX(250);
         player.anims.play('right', true);
         player.flipX=false;
     }
     // moves player up
     if (cursors.up.isDown)
     {
-        player.setVelocityY(-300);
+        player.setVelocityY(-250);
         // player.anims.play('turn', true);
         // player.flipX=false;
     }   else    {
@@ -204,11 +204,11 @@ function update ()
     }
     // moves player down
     if (cursors.down.isDown)   {
-        player.setVelocityY(300);
+        player.setVelocityY(250);
         // player.anims.play('turn', true);
         // player.flipX=true;
     } 
-    
+
     if (cursors.space.isDown)   {
         // console.log("why");
         player.setVelocityX(0);
