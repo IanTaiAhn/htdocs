@@ -195,7 +195,10 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
+        mob.setTint(0xff0000);
+
         this.physics.add.overlap(slash, mob, collectStar, null, this);
+        // mob.clearTint();
         slash.setActive(false).setVisible(false);
     }
     if (cursors.space.isDown && cursors.left.isDown)   {
@@ -203,6 +206,9 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashidle');
+        mob.setTint(0xff0000);
+        // mob.clearTint();
+
         this.physics.add.overlap(slash, mob, collectStar, null, this);
         slash.setActive(false).setVisible(false);
     }
@@ -233,7 +239,7 @@ function collectStar (slash, mob)
     //  Add and update the score
     score += 10;
     scoreText.setText('Score: ' + score);
-
+    mob.clearTint();
 }
 
 function destroySlash()   {
