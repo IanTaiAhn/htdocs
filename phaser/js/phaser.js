@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -17,13 +17,18 @@ var config = {
     }
 };
 
+// sprites
 var player, mob;
-var x;
+
 // var platforms;
 var cursors;
 var score = 0;
 var gameOver = false;
+
+// on screen text
 var scoreText;
+var gameSetText;
+var gameStartText;
 
 // background vars
 var background, mainBack, multiBack;
@@ -32,7 +37,10 @@ var playerGround;
 
 // hitbox vars
 var slash;
-var timedEvent;
+
+// timed events
+var gameSetEvent;
+var gameStartEvent;
 
 
 var game = new Phaser.Game(config);
@@ -95,8 +103,8 @@ function create ()
     
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
-    player = this.physics.add.sprite(600, 550, 'girlidle');    // creates him near the top
-    mob = this.physics.add.sprite(1200, 350, 'dude');
+    player = this.physics.add.sprite(800, 550, 'girlidle');    // creates him near the top
+    mob = this.physics.add.sprite(1600, 350, 'dude');
     slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
 
     //  Player physics properties. Give the little guy a slight bounce.
@@ -134,21 +142,33 @@ function create ()
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, groundCollider);
-    this.physics.add.collider(player, mob);
+    // this.physics.add.collider(player, mob);
     this.physics.add.collider(mob, groundCollider);
+
+    this.physics.add.collider(player, mob, function (player, mob) {
+        console.log("lower player health bar");
+        // cool I can set up my health bar here now.
+    });
+
     // this.physics.add.collider(slash, mob);
     // this.physics.add.collider(player, slash);
 
     // Camera Work
     // follows the player at the center.
-    this.cameras.main.startFollow(player);
     // this.cameras.main.followOffset.set(200, 200);
-    this.cameras.main.setZoom(1.5);
 
+    // this.cameras.main.startFollow(player);
+    // this.cameras.main.setZoom(1.5);
 
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
     // this.physics.add.overlap(slash, mob, collectStar, null, this);
-    timedEvent = this.time.delayedCall(1000, destroySlash, [], this);
+    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    gameStartText = this.add.text(610, 450, 'Game Set', { fontSize: '64px', fill: '#000' });
+    gameSetText = this.add.text(610, 450, 'Start!', { fontSize: '64px', fill: '#000' });
+    gameSetText.setVisible(false);
+    // console.log("started");
+    this.physics.pause();
+    gameSetEvent = this.time.delayedCall(3000, gameStart, [], this);
+    gameStartEvent = this.time.delayedCall(5000, gameSet, [], this);
 }
 
 function update ()
@@ -197,7 +217,7 @@ function update ()
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
         mob.setTint(0xff0000);
 
-        this.physics.add.overlap(slash, mob, collectStar, null, this);
+        this.physics.add.overlap(slash, mob, mobHit, null, this);
         // mob.clearTint();
         slash.setActive(false).setVisible(false);
     }
@@ -209,7 +229,7 @@ function update ()
         mob.setTint(0xff0000);
         // mob.clearTint();
 
-        this.physics.add.overlap(slash, mob, collectStar, null, this);
+        this.physics.add.overlap(slash, mob, mobHit, null, this);
         slash.setActive(false).setVisible(false);
     }
 
@@ -234,22 +254,32 @@ function update ()
     this.physics.accelerateToObject(mob, player, 75, 75, 75);
 }
 
-function collectStar (slash, mob)
+function mobHit (slash, mob)
 {
-    //  Add and update the score
+    // updates score when mush girl slashes mob.
     score += 10;
     scoreText.setText('Score: ' + score);
     mob.clearTint();
 }
 
-function destroySlash()   {
-    console.log("destroyed");
-    slash.destroy();
+// function destroySlash()   {
+//     console.log("destroyed");
+//     slash.destroy();
+// }
+
+// function gameOver() {
+//     if (score == 5000)  {
+//         this.physics.pause();
+//         gameOver = true;
+//     }
+// }
+
+function gameStart()    {
+    this.physics.resume();
+    gameStartText.setVisible(false);
+    gameSetText.setVisible(true);
 }
 
-function gameOver() {
-    if (score == 5000)  {
-        this.physics.pause();
-        gameOver = true;
-    }
+function gameSet()  {
+    gameSetText.setVisible(false);
 }
