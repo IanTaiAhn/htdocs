@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -30,6 +30,11 @@ var background, mainBack, multiBack;
 var cloudsWhite, cloudsWhiteSmall;
 var playerGround;
 
+// hitbox vars
+var slash;
+var timedEvent;
+
+
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -48,15 +53,15 @@ function preload ()
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlslash', 'assets/Slash_0x.png', { frameWidth: 240, frameHeight: 240 });
     this.load.spritesheet('girl2', 'assets/mush_walk.png', { frameWidth: 240, frameHeight: 240 });
-
+    this.load.spritesheet('girlslashidle', 'assets/slash_still2.png', { frameWidth: 240, frameHeight: 240 });
 
 }
 
 function create ()
 {
-    this.cameras.main.setBounds(0,0, 3200, 900);
+    this.cameras.main.setBounds(0,0, 1600, 900);
     // sets hard world bounds.. Probably better to use this instead of colliders to seperate the player from other things.
-    this.physics.world.setBounds(0,0, 3200, 900);
+    this.physics.world.setBounds(0,0, 1600, 900);
 
     //  A simple background for our game
     background = this.add.image(800, 100, 'sky');
@@ -92,6 +97,7 @@ function create ()
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
     player = this.physics.add.sprite(600, 550, 'girlidle');    // creates him near the top
     mob = this.physics.add.sprite(1200, 350, 'dude');
+    slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
@@ -121,7 +127,7 @@ function create ()
     this.anims.create({
         key: 'space',
         frames: this.anims.generateFrameNumbers('girlslash', { start: 1, end: 2 }),
-        frameRate: 2,
+        frameRate: .5,
         repeat: -1
     });
 
@@ -129,59 +135,25 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, groundCollider);
     this.physics.add.collider(player, mob);
+    this.physics.add.collider(mob, groundCollider);
+    // this.physics.add.collider(slash, mob);
+    // this.physics.add.collider(player, slash);
 
     // Camera Work
     // follows the player at the center.
-    // this.cameras.main.startFollow(player);
+    this.cameras.main.startFollow(player);
     // this.cameras.main.followOffset.set(200, 200);
-    // this.cameras.main.setZoom(1.5);
+    this.cameras.main.setZoom(1.5);
 
 
-    // interesting bit of code.. WIll study it more.
-    // I think this is used for generating mobs.
-    // for (var i=0; i < 10; i++)
-    // {
-    //     game.add.sprite(game.world.randomX, game.world.randomY, 'baddie');
-    // }
-    // mob.setVelocityX(100);
-
-    // var ty = player.y
-    // var tx = player.x
-
-    // // enemy's x, y
-    // var x = mob.x
-    // var y = mob.y
-
-    // var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
-
-    // var curve
-
-    // var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
-
-    // var points = [ player.x, player.y, mob.x, mob.y];
-
-    // var curve = new Phaser.Curves.Spline(points);
-
-    // var graphics = this.add.graphics();
-
-    // graphics.lineStyle(1, 0xffffff, 1);
-
-    // curve.draw(graphics, 64);
-
-    // graphics.fillStyle(0x00ff00, 1);
-
-    // var mobFollow = this.add.follower(curve, player.x, player.y, 'dude');
-    // mobFollow.startFollow(4000);
-
+    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    // this.physics.add.overlap(slash, mob, collectStar, null, this);
+    timedEvent = this.time.delayedCall(1000, destroySlash, [], this);
 }
 
 function update ()
 {
-    // TODO Bug that doesn't allow player to move right if left button is pressed down.
-    // Bug also is prevalent in their example I found out, so this just may be how it is.
-    // Probably can clean up if statements to be more readable as well.
     // moves player left
-    // const cam = this.cameras.main;
     if (cursors.left.isDown)    {
         player.setVelocityX(-250);
         player.anims.play('left', true);
@@ -197,70 +169,81 @@ function update ()
     if (cursors.up.isDown)
     {
         player.setVelocityY(-250);
-        // player.anims.play('turn', true);
-        // player.flipX=false;
+        slash.destroy();
+
     }   else    {
         player.setVelocityY(0);
+        slash.destroy();
+
     }
     // moves player down
     if (cursors.down.isDown)   {
         player.setVelocityY(250);
-        // player.anims.play('turn', true);
-        // player.flipX=true;
-    } 
+        slash.destroy();
 
+    } 
+    // do i need this? theres a lot I may not need in these update if statments.
     if (cursors.space.isDown)   {
-        // console.log("why");
         player.setVelocityX(0);
         player.setVelocityY(0);
         player.anims.play('space', true);
+        slash.destroy();
     }
+    // FIXED IT!
+    if (cursors.space.isDown && cursors.right.isDown && !cursors.left.isDown)   {
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+        player.anims.play('space', true);
+        slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
+        this.physics.add.overlap(slash, mob, collectStar, null, this);
+        slash.setActive(false).setVisible(false);
+    }
+    if (cursors.space.isDown && cursors.left.isDown)   {
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+        player.anims.play('space', true);
+        slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashidle');
+        this.physics.add.overlap(slash, mob, collectStar, null, this);
+        slash.setActive(false).setVisible(false);
+    }
+
     // keeps player stationary, and in their idle position.
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
         player.anims.play('turn');
+        slash.destroy();
+    }
+
+    if (score == 1000)  {
+        this.physics.pause();
+        var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
+        gameOver = true;
     }
 
     // gives us the parallax effect
     cloudsWhite.tilePositionX += 0.5;
     cloudsWhiteSmall.tilePositionX += 0.25;
 
-    // console.log('working');
-    // console.log(player.x);
+    this.physics.accelerateToObject(mob, player, 75, 75, 75);
+}
 
-    // var ty = player.y
-    // var tx = player.x
-
-    // // enemy's x, y
-    // var x = mob.x
-    // var y = mob.y
-/*
-    var rotation = Phaser.Math.Angle.Between(x, y, tx, ty)
-
-    var points = [ player.x, player.y, mob.x, mob.y];
-
-    var curve = new Phaser.Curves.Spline(points);
-
-    // var graphics = this.add.graphics();
-
-    // graphics.lineStyle(1, 0xffffff, 1);
-
-    // curve.draw(graphics, 64);
-
-    // graphics.fillStyle(0x00ff00, 1);
-
-    var mobFollow = this.add.follower(curve, player.x, player.y, 'dude');
-    mobFollow.startFollow(4000);
-*/
-    // mob.setX(player.x);
-    // mob.setY(player.y);
-
-    // mob.rotation = rotation;
-    // mob.setAngle(rotation);
-    // mob.setRotation(rotation);
-    this.physics.accelerateToObject(mob, player, 50, 50, 50);
+function collectStar (slash, mob)
+{
+    //  Add and update the score
+    score += 10;
+    scoreText.setText('Score: ' + score);
 
 }
 
+function destroySlash()   {
+    console.log("destroyed");
+    slash.destroy();
+}
 
+function gameOver() {
+    if (score == 5000)  {
+        this.physics.pause();
+        gameOver = true;
+    }
+}
