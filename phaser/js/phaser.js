@@ -22,6 +22,11 @@ var player;
 
 // mobs
 var mob, mob1, mob2, mob3;
+// health
+var mobH = 0;
+var mob1H = 0;
+var mob2H = 0;
+var mob3H = 0;
 
 // var platforms;
 var cursors;
@@ -238,8 +243,18 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
+        // var boolean = true;
+        // console.log(boolean);
+        console.log(this.physics.add.overlap(slash, mob, mobHit, null, this.active));
+        // if (this.physics.add.overlap(slash, mob, mobHit, null, this))   {
+        //     // mobH += 10;
+        //     console.log("its true");
+            
+        // }   else{
+        //     console.log("not hitting");
+        // }
+        // this.physics.add.overlap(slash, mob, mobHit, null, this);
 
-        this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit, null, this);
         this.physics.add.overlap(slash, mob2, mobHit, null, this);
         this.physics.add.overlap(slash, mob3, mobHit, null, this);
@@ -259,7 +274,6 @@ function update ()
         this.physics.add.overlap(slash, mob2, mobHit, null, this);
         this.physics.add.overlap(slash, mob3, mobHit, null, this);
 
-
         slash.setActive(false).setVisible(false);
     }
 
@@ -270,22 +284,49 @@ function update ()
         player.anims.play('turn');
         slash.destroy();
     }
-
-    // Victory if statment
-    // if (score == 5000)  {
-    //     this.physics.pause();
-    //     var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
-    //     gameOver = true;
-    // }
-
     // Clears the mobs tint when out of the hitbox.
     // clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
 
-    this.physics.accelerateToObject(mob, player, 75, 75, 75);
-    this.physics.accelerateToObject(mob1, player, 100, 100, 100);
-    this.physics.accelerateToObject(mob2, player, 50, 50, 50);
-    this.physics.accelerateToObject(mob3, player, 115, 115, 115);
+    // this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+    if (mobH < 1000)    {
+        this.physics.accelerateToObject(mob, player, 75, 75, 75);
+    }
+    if (mob1H < 2000)    {
+        this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+
+    }
+    if (mob2H < 3000)    {
+        this.physics.accelerateToObject(mob2, player, 100, 100, 100);
+
+    }
+    if (mob3H < 3000)    {
+        this.physics.accelerateToObject(mob3, player, 100, 100, 100);
+
+    }
     
+    if (mobH >= 1000)  {
+        mob.setActive(false).setVisible(false);
+        mob.destroy();
+    }
+    if (mob1H >= 2000)  {
+        mob1.setActive(false).setVisible(false);
+        mob1.destroy();
+    }
+    if (mob2H >= 3000)  {
+        mob2.setActive(false).setVisible(false);
+        mob2.destroy();
+    }
+    if (mob3H >= 4000)  {
+        mob3.setActive(false).setVisible(false);
+        mob3.destroy();
+    }
+
+    // Victory if statment
+    if (score == 5000)  {
+        this.physics.pause();
+        var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
+        gameOver = true;
+    }
 }
 
 function mobHit (slash, mob)
@@ -293,6 +334,12 @@ function mobHit (slash, mob)
     // updates score when mush girl slashes mob, and adds the tint.
     score += 10;
     scoreText.setText('Score: ' + score);
+    mobH += 10;
+    mob1H += 10;
+    mob2H += 10;
+    mob3H += 10;
+    
+    // I might have a score for each mob, and that'll be their health bar for now.
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
 
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
@@ -307,9 +354,6 @@ function mobClearTint()    {
 
 function mobSetTint(mob)   {
     mob.setTint(0xff0000);
-    // mob1.setTint(0xff0000);
-    // mob2.setTint(0xff0000);
-    // mob3.setTint(0xff0000);
 }
 
 function gameStart()    {
