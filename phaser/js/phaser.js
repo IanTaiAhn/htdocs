@@ -245,6 +245,7 @@ function update ()
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
         // var boolean = true;
         // console.log(boolean);
+        // I need to figure out how to make mobs independant of each other.
         console.log(this.physics.add.overlap(slash, mob, mobHit, null, this.active));
         // if (this.physics.add.overlap(slash, mob, mobHit, null, this))   {
         //     // mobH += 10;
@@ -304,6 +305,7 @@ function update ()
 
     }
     
+    // I need to make each mob independant of each other.
     if (mobH >= 1000)  {
         mob.setActive(false).setVisible(false);
         mob.destroy();
@@ -322,7 +324,7 @@ function update ()
     }
 
     // Victory if statment
-    if (score == 5000)  {
+    if (score == 4000)  {
         this.physics.pause();
         var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
         gameOver = true;
