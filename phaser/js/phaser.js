@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -18,7 +18,10 @@ var config = {
 };
 
 // sprites
-var player, mob;
+var player;
+
+// mobs
+var mob, mob1, mob2, mob3;
 
 // var platforms;
 var cursors;
@@ -41,7 +44,8 @@ var slash;
 // timed events
 var gameSetEvent;
 var gameStartEvent;
-
+var clearMobTintEvent;
+var mobSetTintEvent
 
 var game = new Phaser.Game(config);
 
@@ -105,6 +109,11 @@ function create ()
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
     player = this.physics.add.sprite(800, 550, 'girlidle');    // creates him near the top
     mob = this.physics.add.sprite(1600, 350, 'dude');
+    mob1 = this.physics.add.sprite(100, 250, 'dude');
+    mob2 = this.physics.add.sprite(600, 150, 'dude');
+    mob3 = this.physics.add.sprite(400, 100, 'dude');
+
+
     slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
 
     //  Player physics properties. Give the little guy a slight bounce.
@@ -142,11 +151,19 @@ function create ()
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, groundCollider);
-    // this.physics.add.collider(player, mob);
+    this.physics.add.collider(player, mob);
+    this.physics.add.collider(player, mob1);
+    this.physics.add.collider(player, mob2);
+    this.physics.add.collider(player, mob3);
+
     this.physics.add.collider(mob, groundCollider);
+    this.physics.add.collider(mob1, groundCollider);
+    this.physics.add.collider(mob2, groundCollider);
+    this.physics.add.collider(mob3, groundCollider);
+
 
     this.physics.add.collider(player, mob, function (player, mob) {
-        console.log("lower player health bar");
+        // console.log("lower player health bar");
         // cool I can set up my health bar here now.
     });
 
@@ -169,10 +186,15 @@ function create ()
     this.physics.pause();
     gameSetEvent = this.time.delayedCall(3000, gameStart, [], this);
     gameStartEvent = this.time.delayedCall(5000, gameSet, [], this);
+    clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
 }
 
 function update ()
 {
+    // gives us the parallax effect
+    cloudsWhite.tilePositionX += 0.5;
+    cloudsWhiteSmall.tilePositionX += 0.25;
+
     // moves player left
     if (cursors.left.isDown)    {
         player.setVelocityX(-250);
@@ -199,7 +221,7 @@ function update ()
     // moves player down
     if (cursors.down.isDown)   {
         player.setVelocityY(250);
-        slash.destroy();
+         slash.destroy();
 
     } 
     // do i need this? theres a lot I may not need in these update if statments.
@@ -209,31 +231,39 @@ function update ()
         player.anims.play('space', true);
         slash.destroy();
     }
-    // FIXED IT!
+
+    // I use my weird logic to activate the slash animation, and havve a real hit box that is used.
     if (cursors.space.isDown && cursors.right.isDown && !cursors.left.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
-        mob.setTint(0xff0000);
 
         this.physics.add.overlap(slash, mob, mobHit, null, this);
-        // mob.clearTint();
+        this.physics.add.overlap(slash, mob1, mobHit, null, this);
+        this.physics.add.overlap(slash, mob2, mobHit, null, this);
+        this.physics.add.overlap(slash, mob3, mobHit, null, this);
+
+
         slash.setActive(false).setVisible(false);
     }
+
+    // mob tint triggers when they're not overlapping, so fix that.
     if (cursors.space.isDown && cursors.left.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashidle');
-        mob.setTint(0xff0000);
-        // mob.clearTint();
-
         this.physics.add.overlap(slash, mob, mobHit, null, this);
+        this.physics.add.overlap(slash, mob1, mobHit, null, this);
+        this.physics.add.overlap(slash, mob2, mobHit, null, this);
+        this.physics.add.overlap(slash, mob3, mobHit, null, this);
+
+
         slash.setActive(false).setVisible(false);
     }
 
-    // keeps player stationary, and in their idle position.
+    // Keeps mush girl in idle pose when no inputs are being pressed down.
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
@@ -241,38 +271,46 @@ function update ()
         slash.destroy();
     }
 
-    if (score == 1000)  {
-        this.physics.pause();
-        var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
-        gameOver = true;
-    }
+    // Victory if statment
+    // if (score == 5000)  {
+    //     this.physics.pause();
+    //     var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
+    //     gameOver = true;
+    // }
 
-    // gives us the parallax effect
-    cloudsWhite.tilePositionX += 0.5;
-    cloudsWhiteSmall.tilePositionX += 0.25;
+    // Clears the mobs tint when out of the hitbox.
+    // clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
 
     this.physics.accelerateToObject(mob, player, 75, 75, 75);
+    this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+    this.physics.accelerateToObject(mob2, player, 50, 50, 50);
+    this.physics.accelerateToObject(mob3, player, 115, 115, 115);
+    
 }
 
 function mobHit (slash, mob)
 {
-    // updates score when mush girl slashes mob.
+    // updates score when mush girl slashes mob, and adds the tint.
     score += 10;
     scoreText.setText('Score: ' + score);
-    mob.clearTint();
+    mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
+
+    clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
 }
 
-// function destroySlash()   {
-//     console.log("destroyed");
-//     slash.destroy();
-// }
+function mobClearTint()    {
+    mob.clearTint();
+    mob1.clearTint();
+    mob2.clearTint();
+    mob3.clearTint();
+}
 
-// function gameOver() {
-//     if (score == 5000)  {
-//         this.physics.pause();
-//         gameOver = true;
-//     }
-// }
+function mobSetTint(mob)   {
+    mob.setTint(0xff0000);
+    // mob1.setTint(0xff0000);
+    // mob2.setTint(0xff0000);
+    // mob3.setTint(0xff0000);
+}
 
 function gameStart()    {
     this.physics.resume();
