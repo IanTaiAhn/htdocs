@@ -246,7 +246,7 @@ function update ()
         // var boolean = true;
         // console.log(boolean);
         // I need to figure out how to make mobs independant of each other.
-        console.log(this.physics.add.overlap(slash, mob, mobHit, null, this.active));
+        // console.log(this.physics.add.overlap(slash, mob, mobHit, null, this.active));
         // if (this.physics.add.overlap(slash, mob, mobHit, null, this))   {
         //     // mobH += 10;
         //     console.log("its true");
@@ -254,8 +254,7 @@ function update ()
         // }   else{
         //     console.log("not hitting");
         // }
-        // this.physics.add.overlap(slash, mob, mobHit, null, this);
-
+        this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit, null, this);
         this.physics.add.overlap(slash, mob2, mobHit, null, this);
         this.physics.add.overlap(slash, mob3, mobHit, null, this);
