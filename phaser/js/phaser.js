@@ -43,6 +43,8 @@ var background, mainBack, multiBack;
 var cloudsWhite, cloudsWhiteSmall;
 var playerGround;
 
+// stage colliders
+var groundCollider, skyCollider, sideColliderL, sideColliderR;
 // hitbox vars
 var slash;
 
@@ -65,6 +67,7 @@ function preload ()
     this.load.image("clouds-white", "assets/clouds-white.png");
     this.load.image("clouds-white-small", "assets/clouds-white-small.png");
     this.load.image('forestground', "assets/forest_ground.png");
+    this.load.image('background01', "assets/background01.png");
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
@@ -98,25 +101,33 @@ function create ()
     cloudsWhiteSmall = this.add.tileSprite(800, 200, 1600, 400, "clouds-white-small");
 
     // green rectangle, will replace with actual ground, and assests, and such.
-    var platforms = this.physics.add.staticGroup();
-    platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
+    // var platforms = this.physics.add.staticGroup();
+    // platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
 
-    // playerGround = this.physics.add.staticGroup();
-    // playerGround.create(800, 650, 'forestground').setScale(2,1.5).refreshBody();
+
+    // Actual drawn background... It looks so good!
+    playerGround = this.physics.add.staticGroup();
+    playerGround.create(800, 650, 'background01').setScale(1,1.15).refreshBody();
 
     // the actual colliders seperating the player from the sky, and the edge of the screen.
-    var groundCollider = this.physics.add.staticGroup();
-    // this isn't actually necessary, it is acting as a temporary visual cue.
-    groundCollider.create(1, 1056).setScale(100, 10).refreshBody();
-    // groundCollider.create(1, 400).setScale(100, 1).refreshBody();
-    
+    groundCollider = this.physics.add.staticGroup();
+    groundCollider.create(1, 1056).setScale(100, 9.8).refreshBody();
+
+    skyCollider = this.physics.add.staticGroup();
+    skyCollider.create(550, 390).setScale(80, .05).refreshBody();
+
+    sideColliderL = this.physics.add.staticGroup();
+    sideColliderL.create(0, 420).setScale(.05, 30).refreshBody();
+    sideColliderR = this.physics.add.staticGroup();
+    sideColliderR.create(1600, 420).setScale(.05, 30).refreshBody();
+
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
     player = this.physics.add.sprite(800, 550, 'girlidle');    // creates him near the top
-    mob = this.physics.add.sprite(1600, 350, 'dude');
-    mob1 = this.physics.add.sprite(100, 250, 'dude');
-    mob2 = this.physics.add.sprite(600, 150, 'dude');
-    mob3 = this.physics.add.sprite(400, 100, 'dude');
+    mob = this.physics.add.sprite(1400, 400, 'dude');
+    mob1 = this.physics.add.sprite(100, 500, 'dude');
+    mob2 = this.physics.add.sprite(600, 550, 'dude');
+    mob3 = this.physics.add.sprite(400, 600, 'dude');
 
 
     slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
@@ -155,7 +166,7 @@ function create ()
 
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
-    this.physics.add.collider(player, groundCollider);
+    this.physics.add.collider(player, skyCollider);
     this.physics.add.collider(player, mob);
     this.physics.add.collider(player, mob1);
     this.physics.add.collider(player, mob2);
@@ -166,6 +177,20 @@ function create ()
     this.physics.add.collider(mob2, groundCollider);
     this.physics.add.collider(mob3, groundCollider);
 
+    this.physics.add.collider(mob, skyCollider);
+    this.physics.add.collider(mob1, skyCollider);
+    this.physics.add.collider(mob2, skyCollider);
+    this.physics.add.collider(mob3, skyCollider);
+
+    this.physics.add.collider(mob, sideColliderL);
+    this.physics.add.collider(mob1, sideColliderL);
+    this.physics.add.collider(mob2, sideColliderL);
+    this.physics.add.collider(mob3, sideColliderL);
+
+    this.physics.add.collider(mob, sideColliderR);
+    this.physics.add.collider(mob1, sideColliderR);
+    this.physics.add.collider(mob2, sideColliderR);
+    this.physics.add.collider(mob3, sideColliderR);
 
     this.physics.add.collider(player, mob, function (player, mob) {
         // console.log("lower player health bar");
@@ -184,8 +209,8 @@ function create ()
 
     // this.physics.add.overlap(slash, mob, collectStar, null, this);
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-    gameStartText = this.add.text(610, 450, 'Game Set', { fontSize: '64px', fill: '#000' });
-    gameSetText = this.add.text(610, 450, 'Start!', { fontSize: '64px', fill: '#000' });
+    gameStartText = this.add.text(630, 300, 'Game Set', { fontSize: '64px', fill: '#000' });
+    gameSetText = this.add.text(630, 300, 'Start!', { fontSize: '64px', fill: '#000' });
     gameSetText.setVisible(false);
     // console.log("started");
     this.physics.pause();
@@ -325,7 +350,7 @@ function update ()
     // Victory if statment
     if (score == 4000)  {
         this.physics.pause();
-        var gameOverText = this.add.text(600, 450, 'VICTORY!', { fontSize: '64px', fill: '#000' });
+        var gameOverText = this.add.text(630, 300, 'VICTORY!', { fontSize: '64px', fill: '#000' });
         gameOver = true;
     }
 }
