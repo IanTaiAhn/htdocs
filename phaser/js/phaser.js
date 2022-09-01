@@ -54,7 +54,6 @@ var gameStartEvent;
 var clearMobTintEvent;
 var mobSetTintEvent;
 var staggerMobEvent, staggerMobEvent1, staggerMobEvent2, staggerMobEvent3;
-var cleanseMobEvent, cleanseMobEvent1, cleanseMobEvent2, cleanseMobEvent3;
 
 var game = new Phaser.Game(config);
 
@@ -272,7 +271,7 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
-        
+
         this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit1, null, this);
         this.physics.add.overlap(slash, mob2, mobHit2, null, this);
@@ -358,8 +357,6 @@ function mobHit (slash, mob)
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
 
     staggerMobEvent = this.time.delayedCall(0, staggerMob, [mob], this);
-    cleanseMobEvent = this.time.delayedCall(500, cleanseMob, [mob], this);
-
 }
 
 function mobHit1 (slash, mob)
@@ -372,7 +369,6 @@ function mobHit1 (slash, mob)
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
 
     staggerMobEvent1 = this.time.delayedCall(0, staggerMob1, [mob], this);
-    cleanseMobEvent1 = this.time.delayedCall(500, cleanseMob1, [mob], this);
 }
 
 function mobHit2 (slash, mob)
@@ -385,7 +381,6 @@ function mobHit2 (slash, mob)
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
 
     staggerMobEvent = this.time.delayedCall(0, staggerMob2, [mob], this);
-    cleanseMobEvent = this.time.delayedCall(500, cleanseMob2, [mob], this);
 }
 
 function mobHit3 (slash, mob)
@@ -399,7 +394,6 @@ function mobHit3 (slash, mob)
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
 
     staggerMobEvent = this.time.delayedCall(0, staggerMob3, [mob], this);
-    cleanseMobEvent = this.time.delayedCall(500, cleanseMob3, [mob], this);
 }
 
 function mobClearTint()    {
@@ -411,7 +405,6 @@ function mobClearTint()    {
 
 function mobSetTint(mob)   {
     mob.setTint(0xff0000);
-    // pause mob for a second here?
 }
 
 function gameStart()    {
@@ -447,13 +440,6 @@ function staggerMob1(mob)   {
 
 }
 
-function cleanseMob1(mob)   {
-    if (mob1H < 1000)    {
-        mob.setVelocityX(0);
-        mob.setVelocityY(0);
-    }
-}
-
 function staggerMob2(mob)   {
     if (mob2H < 1000)    {
         mob.setVelocityX(0);
@@ -462,24 +448,10 @@ function staggerMob2(mob)   {
 
 }
 
-function cleanseMob2(mob)   {
-    if (mob2H < 1000)    {
-        mob.setVelocityX(0);
-        mob.setVelocityY(0);
-    }
-}
-
 function staggerMob3(mob)   {
     if (mob3H < 1000)    {
         mob.setVelocityX(0);
         mob.setVelocityY(0);
     }
 
-}
-
-function cleanseMob3(mob)   {
-    if (mob3H < 1000)    {
-        mob.setVelocityX(0);
-        mob.setVelocityY(0);
-    }
 }
