@@ -55,6 +55,10 @@ var clearMobTintEvent;
 var mobSetTintEvent;
 var staggerMobEvent, staggerMobEvent1, staggerMobEvent2, staggerMobEvent3;
 
+// hit event (test)
+var slashEvent;
+var timer;
+
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -220,11 +224,32 @@ function create ()
     gameSetEvent = this.time.delayedCall(3000, gameStart, [], this);
     gameStartEvent = this.time.delayedCall(5000, gameSet, [], this);
     clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
+    slashEvent = this.time.delayedCall(1100, slashEventM, [], this);
+    
+    // timer = scene.time.addEvent({
+    //     delay: 500,                // ms
+    //     callback: callback,
+    //     //args: [],
+    //     callbackScope: thisArg,
+    //     loop: true
+    // });
+    // var clock = new Clock(this);
+
 }
 
 function update ()
 {
+    // console.log(slashEvent.getElapsed());
+    if (slashEvent.getElapsed() > 1000)    {
+        // slashEvent = this.time.delayedCall(100, slashEventM, [], this);
+        slashEvent.reset();
+        console.log('Thing done');
+
+        // console.log(slashEvent.get)
+    }
+
     // gives us the parallax effect
+    // console.log(gameSetEvent.getElapsed());
     cloudsWhite.tilePositionX += 0.5;
     cloudsWhiteSmall.tilePositionX += 0.25;
 
@@ -278,6 +303,9 @@ function update ()
         this.physics.add.overlap(slash, mob3, mobHit3, null, this);
 
         slash.setActive(false).setVisible(false);
+
+        
+        // gameSetEvent = this.time.delayedCall(200, slashEvent, [], this);
     }
 
     // mob tint triggers when they're not overlapping, so fix that.
@@ -345,6 +373,21 @@ function update ()
         var gameOverText = this.add.text(630, 300, 'VICTORY!', { fontSize: '64px', fill: '#000' });
         gameOver = true;
     }
+}
+
+function slashEventM()   {
+    
+    // player.setVelocityX(0);
+    // player.setVelocityY(0);
+    // player.anims.play('space', true);
+    // slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
+
+    // this.physics.add.overlap(slash, mob, mobHit, null, this);
+    // this.physics.add.overlap(slash, mob1, mobHit1, null, this);
+    // this.physics.add.overlap(slash, mob2, mobHit2, null, this);
+    // this.physics.add.overlap(slash, mob3, mobHit3, null, this);
+
+    // slash.setActive(false).setVisible(false);
 }
 
 function mobHit (slash, mob)
@@ -425,12 +468,6 @@ function staggerMob(mob)   {
 
 }
 
-function cleanseMob(mob)   {
-    if (mobH < 1000)    {
-        mob.setVelocityX(0);
-        mob.setVelocityY(0);
-    }
-}
 
 function staggerMob1(mob)   {
     if (mob1H < 1000)    {
