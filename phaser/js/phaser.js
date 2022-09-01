@@ -27,7 +27,7 @@ var mobH = 0;
 var mob1H = 0;
 var mob2H = 0;
 var mob3H = 0;
-
+var mobHText;
 // var platforms;
 var cursors;
 var score = 0;
@@ -52,7 +52,9 @@ var slash;
 var gameSetEvent;
 var gameStartEvent;
 var clearMobTintEvent;
-var mobSetTintEvent
+var mobSetTintEvent;
+var staggerMobEvent, staggerMobEvent1, staggerMobEvent2, staggerMobEvent3;
+var cleanseMobEvent, cleanseMobEvent1, cleanseMobEvent2, cleanseMobEvent3;
 
 var game = new Phaser.Game(config);
 
@@ -202,13 +204,15 @@ function create ()
 
     // Camera Work
     // follows the player at the center.
-    // this.cameras.main.followOffset.set(200, 200);
+    // this.cameras.main.followOffset.set(200, 200); 
 
     // this.cameras.main.startFollow(player);
     // this.cameras.main.setZoom(1.5);
 
     // this.physics.add.overlap(slash, mob, collectStar, null, this);
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    mobHText = this.add.text(16, 45, 'mobH: 0', { fontSize: '32px', fill: '#000' });
+
     gameStartText = this.add.text(630, 300, 'Game Set', { fontSize: '64px', fill: '#000' });
     gameSetText = this.add.text(630, 300, 'Start!', { fontSize: '64px', fill: '#000' });
     gameSetText.setVisible(false);
@@ -268,22 +272,11 @@ function update ()
         player.setVelocityY(0);
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
-        // var boolean = true;
-        // console.log(boolean);
-        // I need to figure out how to make mobs independant of each other.
-        // console.log(this.physics.add.overlap(slash, mob, mobHit, null, this.active));
-        // if (this.physics.add.overlap(slash, mob, mobHit, null, this))   {
-        //     // mobH += 10;
-        //     console.log("its true");
-            
-        // }   else{
-        //     console.log("not hitting");
-        // }
+        
         this.physics.add.overlap(slash, mob, mobHit, null, this);
-        this.physics.add.overlap(slash, mob1, mobHit, null, this);
-        this.physics.add.overlap(slash, mob2, mobHit, null, this);
-        this.physics.add.overlap(slash, mob3, mobHit, null, this);
-
+        this.physics.add.overlap(slash, mob1, mobHit1, null, this);
+        this.physics.add.overlap(slash, mob2, mobHit2, null, this);
+        this.physics.add.overlap(slash, mob3, mobHit3, null, this);
 
         slash.setActive(false).setVisible(false);
     }
@@ -295,9 +288,9 @@ function update ()
         player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashidle');
         this.physics.add.overlap(slash, mob, mobHit, null, this);
-        this.physics.add.overlap(slash, mob1, mobHit, null, this);
-        this.physics.add.overlap(slash, mob2, mobHit, null, this);
-        this.physics.add.overlap(slash, mob3, mobHit, null, this);
+        this.physics.add.overlap(slash, mob1, mobHit1, null, this);
+        this.physics.add.overlap(slash, mob2, mobHit2, null, this);
+        this.physics.add.overlap(slash, mob3, mobHit3, null, this);
 
         slash.setActive(false).setVisible(false);
     }
@@ -314,35 +307,35 @@ function update ()
 
     // this.physics.accelerateToObject(mob1, player, 100, 100, 100);
     if (mobH < 1000)    {
-        this.physics.accelerateToObject(mob, player, 75, 75, 75);
+        this.physics.accelerateToObject(mob, player, 100, 100, 100);
     }
-    if (mob1H < 2000)    {
+    if (mob1H < 1000)    {
         this.physics.accelerateToObject(mob1, player, 100, 100, 100);
 
     }
-    if (mob2H < 3000)    {
+    if (mob2H < 1000)    {
         this.physics.accelerateToObject(mob2, player, 100, 100, 100);
 
     }
-    if (mob3H < 3000)    {
+    if (mob3H < 1000)    {
         this.physics.accelerateToObject(mob3, player, 100, 100, 100);
 
     }
-    
+     
     // I need to make each mob independant of each other.
     if (mobH >= 1000)  {
         mob.setActive(false).setVisible(false);
         mob.destroy();
     }
-    if (mob1H >= 2000)  {
+    if (mob1H >= 1000)  {
         mob1.setActive(false).setVisible(false);
         mob1.destroy();
     }
-    if (mob2H >= 3000)  {
+    if (mob2H >= 1000)  {
         mob2.setActive(false).setVisible(false);
         mob2.destroy();
     }
-    if (mob3H >= 4000)  {
+    if (mob3H >= 1000)  {
         mob3.setActive(false).setVisible(false);
         mob3.destroy();
     }
@@ -357,18 +350,56 @@ function update ()
 
 function mobHit (slash, mob)
 {
-    // updates score when mush girl slashes mob, and adds the tint.
     score += 10;
     scoreText.setText('Score: ' + score);
+    mobHText.setText('mobH: ' + mobH);
     mobH += 10;
+    mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
+    clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
+
+    staggerMobEvent = this.time.delayedCall(0, staggerMob, [mob], this);
+    cleanseMobEvent = this.time.delayedCall(500, cleanseMob, [mob], this);
+
+}
+
+function mobHit1 (slash, mob)
+{
+    score += 10;
+    scoreText.setText('Score: ' + score);
+    mobHText.setText('mobH: ' + mobH);
     mob1H += 10;
+    mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
+    clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
+
+    staggerMobEvent1 = this.time.delayedCall(0, staggerMob1, [mob], this);
+    cleanseMobEvent1 = this.time.delayedCall(500, cleanseMob1, [mob], this);
+}
+
+function mobHit2 (slash, mob)
+{
+    score += 10;
+    scoreText.setText('Score: ' + score);
+    mobHText.setText('mobH: ' + mobH);
     mob2H += 10;
+    mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
+    clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
+
+    staggerMobEvent = this.time.delayedCall(0, staggerMob2, [mob], this);
+    cleanseMobEvent = this.time.delayedCall(500, cleanseMob2, [mob], this);
+}
+
+function mobHit3 (slash, mob)
+{
+    score += 10;
+    scoreText.setText('Score: ' + score);
+    mobHText.setText('mobH: ' + mobH);
     mob3H += 10;
     
-    // I might have a score for each mob, and that'll be their health bar for now.
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
-
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
+
+    staggerMobEvent = this.time.delayedCall(0, staggerMob3, [mob], this);
+    cleanseMobEvent = this.time.delayedCall(500, cleanseMob3, [mob], this);
 }
 
 function mobClearTint()    {
@@ -380,6 +411,7 @@ function mobClearTint()    {
 
 function mobSetTint(mob)   {
     mob.setTint(0xff0000);
+    // pause mob for a second here?
 }
 
 function gameStart()    {
@@ -390,4 +422,64 @@ function gameStart()    {
 
 function gameSet()  {
     gameSetText.setVisible(false);
+}
+
+function staggerMob(mob)   {
+    if (mobH < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+
+}
+
+function cleanseMob(mob)   {
+    if (mobH < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+}
+
+function staggerMob1(mob)   {
+    if (mob1H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+
+}
+
+function cleanseMob1(mob)   {
+    if (mob1H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+}
+
+function staggerMob2(mob)   {
+    if (mob2H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+
+}
+
+function cleanseMob2(mob)   {
+    if (mob2H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+}
+
+function staggerMob3(mob)   {
+    if (mob3H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
+
+}
+
+function cleanseMob3(mob)   {
+    if (mob3H < 1000)    {
+        mob.setVelocityX(0);
+        mob.setVelocityY(0);
+    }
 }
