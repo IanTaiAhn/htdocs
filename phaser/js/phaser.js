@@ -234,7 +234,6 @@ function create ()
     //     loop: true
     // });
     // var clock = new Clock(this);
-
 }
 
 function update ()
