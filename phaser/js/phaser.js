@@ -74,7 +74,6 @@ function preload ()
     this.load.image('cloudsmulti', 'assets/multi_clouds_background.png');
     this.load.image("clouds-white", "assets/clouds-white.png");
     this.load.image("clouds-white-small", "assets/clouds-white-small.png");
-    this.load.image('forestground', "assets/forest_ground.png");
     this.load.image('background01', "assets/background01.png");
     this.load.image('bush01', "assets/bush01.png");
     this.load.image('bush02', "assets/bush02.png");
@@ -82,11 +81,12 @@ function preload ()
     this.load.image('mushroom01', "assets/mushroom01.png");
     this.load.image('mushroom02', "assets/mushroom02.png");
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
+    // this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
-    this.load.spritesheet('girlslash', 'assets/Slash_0x.png', { frameWidth: 240, frameHeight: 240 });
     this.load.spritesheet('girl2', 'assets/mush_walk.png', { frameWidth: 240, frameHeight: 240 });
-    this.load.spritesheet('girlslashidle', 'assets/slash_still2.png', { frameWidth: 240, frameHeight: 240 });
+    this.load.spritesheet('girlslashstatic', 'assets/slash_still2.png', { frameWidth: 240, frameHeight: 240 });
+    // this.load.spritesheet('girlslash', 'assets/mush_girl_slash_copy.png', { frameWidth: 82, frameHeight: 62 });
+    this.load.spritesheet('girlslash', 'assets/slashanims.png', { frameWidth: 319, frameHeight: 240 });
 
 }
 
@@ -145,7 +145,7 @@ function create ()
     mob2 = this.physics.add.sprite(600, 550, 'dude');
     mob3 = this.physics.add.sprite(400, 600, 'dude');
 
-    slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
+    slash = this.physics.add.sprite(8000, 8000, 'girlslashstatic');
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
@@ -154,7 +154,7 @@ function create ()
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('girl2', { start: 1, end: 8 }),
+        frames: this.anims.generateFrameNumbers('girl2', { start: 0, end: 7 }),
         frameRate: 12,
         repeat: -1
     });
@@ -167,14 +167,14 @@ function create ()
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('girl2', { start: 1, end: 8 }),
+        frames: this.anims.generateFrameNumbers('girl2', { start: 0, end: 7 }),
         frameRate: 12,
         repeat: -1
     });
 
     this.anims.create({
         key: 'space',
-        frames: this.anims.generateFrameNumbers('girlslash', { start: 1, end: 2 }),
+        frames: this.anims.generateFrameNumbers('girlslash', { start: 0, end: 1 }),
         frameRate: .5,
         repeat: -1
     });
@@ -209,7 +209,7 @@ function create ()
 
     this.physics.add.collider(player, mush1);
 
-    // mush1.setPushable();
+    mush1.setPushable(false);
 
     this.physics.add.collider(player, mob, function (player, mob) {
         // console.log("lower player health bar");
@@ -307,8 +307,8 @@ function update ()
     if (cursors.space.isDown && cursors.right.isDown && !cursors.left.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
-        player.anims.play('space', true);
-        slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashidle');
+        // player.anims.play('space', true);
+        slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashstatic');
 
         this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit1, null, this);
@@ -324,8 +324,8 @@ function update ()
     if (cursors.space.isDown && cursors.left.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
-        player.anims.play('space', true);
-        slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashidle');
+        // player.anims.play('space', true);
+        slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashstatic');
         this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit1, null, this);
         this.physics.add.overlap(slash, mob2, mobHit2, null, this);
