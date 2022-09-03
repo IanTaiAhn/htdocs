@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -19,6 +19,9 @@ var config = {
 
 // sprites
 var player;
+
+// Physical World objects
+var mush1, mush2, bush1, bush2, dirt1;
 
 // mobs
 var mob, mob1, mob2, mob3;
@@ -73,6 +76,11 @@ function preload ()
     this.load.image("clouds-white-small", "assets/clouds-white-small.png");
     this.load.image('forestground', "assets/forest_ground.png");
     this.load.image('background01', "assets/background01.png");
+    this.load.image('bush01', "assets/bush01.png");
+    this.load.image('bush02', "assets/bush02.png");
+    this.load.image('dirt01', "assets/dirt01.png");
+    this.load.image('mushroom01', "assets/mushroom01.png");
+    this.load.image('mushroom02', "assets/mushroom02.png");
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
@@ -125,6 +133,9 @@ function create ()
     sideColliderL.create(0, 420).setScale(.05, 30).refreshBody();
     sideColliderR = this.physics.add.staticGroup();
     sideColliderR.create(1600, 420).setScale(.05, 30).refreshBody();
+    
+    // Physical world objects
+    mush1 = this.physics.add.sprite(400,400, 'mushroom01').setScale(.2,.2);
 
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
@@ -133,7 +144,6 @@ function create ()
     mob1 = this.physics.add.sprite(100, 500, 'dude');
     mob2 = this.physics.add.sprite(600, 550, 'dude');
     mob3 = this.physics.add.sprite(400, 600, 'dude');
-
 
     slash = this.physics.add.sprite(8000, 8000, 'girlslashidle');
 
@@ -196,6 +206,10 @@ function create ()
     this.physics.add.collider(mob1, sideColliderR);
     this.physics.add.collider(mob2, sideColliderR);
     this.physics.add.collider(mob3, sideColliderR);
+
+    this.physics.add.collider(player, mush1);
+
+    // mush1.setPushable();
 
     this.physics.add.collider(player, mob, function (player, mob) {
         // console.log("lower player health bar");
@@ -302,7 +316,6 @@ function update ()
         this.physics.add.overlap(slash, mob3, mobHit3, null, this);
 
         slash.setActive(false).setVisible(false);
-
         
         // gameSetEvent = this.time.delayedCall(200, slashEvent, [], this);
     }
