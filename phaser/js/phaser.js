@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -83,7 +83,9 @@ function preload ()
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     // this.load.spritesheet('girl', 'assets/girlwalk.png', { frameWidth: 67.5, frameHeight: 122 });
     this.load.spritesheet('girlidle', 'assets/mush_girl_idle.png', { frameWidth: 67.5, frameHeight: 122 });
-    this.load.spritesheet('girl2', 'assets/mush_walk.png', { frameWidth: 240, frameHeight: 240 });
+    // this.load.spritesheet('girl2', 'assets/mush_walk.png', { frameWidth: 240, frameHeight: 240 });
+    this.load.spritesheet('girl2', 'assets/walkanims64C.png', { frameWidth: 90.9, frameHeight: 118 });
+
     this.load.spritesheet('girlslashstatic', 'assets/slash_still2.png', { frameWidth: 240, frameHeight: 240 });
     // this.load.spritesheet('girlslash', 'assets/mush_girl_slash_copy.png', { frameWidth: 82, frameHeight: 62 });
     this.load.spritesheet('girlslash', 'assets/slashanims.png', { frameWidth: 319, frameHeight: 240 });
@@ -174,9 +176,10 @@ function create ()
 
     this.anims.create({
         key: 'space',
-        frames: this.anims.generateFrameNumbers('girlslash', { start: 0, end: 1 }),
-        frameRate: .5,
-        repeat: -1
+        // frames: this.anims.generateFrameNumbers('girlslash', { start: 0, end: 1 }),
+        frames: [ { key: 'girlslashstatic' } ]
+        // frameRate: 20
+        // repeat: -1
     });
 
     //  Input Events
@@ -238,7 +241,8 @@ function create ()
     gameSetEvent = this.time.delayedCall(3000, gameStart, [], this);
     gameStartEvent = this.time.delayedCall(5000, gameSet, [], this);
     clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
-    slashEvent = this.time.delayedCall(1100, slashEventM, [], this);
+
+    // slashEvent = this.time.delayedCall(1100, slashEventM, [], this);
     
     // timer = scene.time.addEvent({
     //     delay: 500,                // ms
@@ -253,13 +257,12 @@ function create ()
 function update ()
 {
     // console.log(slashEvent.getElapsed());
-    if (slashEvent.getElapsed() > 1000)    {
+    // if (slashEvent.getElapsed() > 1000)    {
         // slashEvent = this.time.delayedCall(100, slashEventM, [], this);
-        slashEvent.reset();
-        console.log('Thing done');
-
+        // slashEvent.reset();
+        // console.log('Thing done');
         // console.log(slashEvent.get)
-    }
+    // }
 
     // gives us the parallax effect
     // console.log(gameSetEvent.getElapsed());
@@ -269,6 +272,7 @@ function update ()
     // moves player left
     if (cursors.left.isDown)    {
         player.setVelocityX(-250);
+        // player.setX(50);
         player.anims.play('left', true);
         player.flipX=true;
     } 
