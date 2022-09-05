@@ -20,17 +20,23 @@ var config = {
 // sprites
 var player;
 
-// Physical World objects
-var mush1, mush2, bush1, bush2, dirt1;
-
-// mobs
+// Physical World sprites
+var mush1, mush2, mush3, mush4, bush1, bush2, dirt1;
+var mush1H = 0;
+var mush2H = 0;
+var mush3H = 0;
+var mush4H = 0;
+var mush1Text;
+// mob sprites
 var mob, mob1, mob2, mob3;
+
 // health
 var mobH = 0;
 var mob1H = 0;
 var mob2H = 0;
 var mob3H = 0;
 var mobHText;
+
 // var platforms;
 var cursors;
 var score = 0;
@@ -62,6 +68,8 @@ var staggerMobEvent, staggerMobEvent1, staggerMobEvent2, staggerMobEvent3;
 var slashEvent;
 var timer;
 
+// game over vars
+var destroyedMush = 0;
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -131,17 +139,35 @@ function create ()
     skyCollider = this.physics.add.staticGroup();
     skyCollider.create(550, 390).setScale(80, .05).refreshBody();
 
-    sideColliderL = this.physics.add.staticGroup();
-    sideColliderL.create(0, 420).setScale(.05, 30).refreshBody();
-    sideColliderR = this.physics.add.staticGroup();
-    sideColliderR.create(1600, 420).setScale(.05, 30).refreshBody();
+    // sideColliderL = this.physics.add.staticGroup();
+    // sideColliderL.create(0, 420).setScale(.05, 30).refreshBody();
+    // sideColliderR = this.physics.add.staticGroup();
+    // sideColliderR.create(1600, 420).setScale(.05, 30).refreshBody();
     
     // Physical world objects
     mush1 = this.physics.add.sprite(400,400, 'mushroom01').setScale(.2,.2);
+    mush1.setPushable(false);
+    // mush1Text = this.add.text(380, 270, 'score: 0', { fontSize: '20px', fill: '#000' });
+
+
+    mush2 = this.physics.add.sprite(800,800, 'mushroom02').setScale(.2,.2);
+    mush2.setPushable(false);
+
+    mush3 = this.physics.add.sprite(1200,600, 'mushroom02').setScale(.1,.1);
+    mush3.setPushable(false);
+
+    mush4 = this.physics.add.sprite(100,700, 'mushroom02').setScale(.1,.1);
+    mush4.setPushable(false);
+
+    dirt1 = this.physics.add.sprite(90,720, 'dirt01').setScale(.1,.1);
+
 
     // The player and its settings
-    // player = this.physics.add.sprite(600, 1050, 'dude');    // creates him near the bottom
-    player = this.physics.add.sprite(800, 550, 'girlidle');    // creates him near the top
+    // player = this.physics.add.sprite(600, 1050, 'dude');
+    player = this.physics.add.sprite(800, 550, 'girlidle');
+    // THIS IS WHAT I WAS LOOKING FOR! HAHAHA. THIS SETS THE SIZE OF THE COLLIDER ON THE SPRITE! WOWOWOWO!
+    player.setSize(40, 100);
+
     mob = this.physics.add.sprite(1400, 400, 'dude');
     mob1 = this.physics.add.sprite(100, 500, 'dude');
     mob2 = this.physics.add.sprite(600, 550, 'dude');
@@ -151,7 +177,7 @@ function create ()
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    // player.setCollideWorldBounds(true);
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
@@ -190,6 +216,7 @@ function create ()
     this.physics.add.collider(player, mob2);
     this.physics.add.collider(player, mob3);
 
+    this.physics.add.collider(player, groundCollider);    
     this.physics.add.collider(mob, groundCollider);
     this.physics.add.collider(mob1, groundCollider);
     this.physics.add.collider(mob2, groundCollider);
@@ -200,19 +227,27 @@ function create ()
     this.physics.add.collider(mob2, skyCollider);
     this.physics.add.collider(mob3, skyCollider);
 
-    this.physics.add.collider(mob, sideColliderL);
-    this.physics.add.collider(mob1, sideColliderL);
-    this.physics.add.collider(mob2, sideColliderL);
-    this.physics.add.collider(mob3, sideColliderL);
+    this.physics.add.collider(mob, mush1);
+    this.physics.add.collider(mob1, mush2);
+    this.physics.add.collider(mob2, mush3);
+    this.physics.add.collider(mob3, mush4);
+    
 
-    this.physics.add.collider(mob, sideColliderR);
-    this.physics.add.collider(mob1, sideColliderR);
-    this.physics.add.collider(mob2, sideColliderR);
-    this.physics.add.collider(mob3, sideColliderR);
+    // this.physics.add.collider(mob, sideColliderL);
+    // this.physics.add.collider(mob1, sideColliderL);
+    // this.physics.add.collider(mob2, sideColliderL);
+    // this.physics.add.collider(mob3, sideColliderL);
+
+    // this.physics.add.collider(mob, sideColliderR);
+    // this.physics.add.collider(mob1, sideColliderR);
+    // this.physics.add.collider(mob2, sideColliderR);
+    // this.physics.add.collider(mob3, sideColliderR);
 
     this.physics.add.collider(player, mush1);
+    this.physics.add.collider(player, mush2);
+    this.physics.add.collider(player, mush3);
+    this.physics.add.collider(player, mush4);
 
-    mush1.setPushable(false);
 
     this.physics.add.collider(player, mob, function (player, mob) {
         // console.log("lower player health bar");
@@ -231,7 +266,7 @@ function create ()
 
     // this.physics.add.overlap(slash, mob, collectStar, null, this);
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-    mobHText = this.add.text(16, 45, 'mobH: 0', { fontSize: '32px', fill: '#000' });
+    // mobHText = this.add.text(16, 45, 'mobH: 0', { fontSize: '32px', fill: '#000' });
 
     gameStartText = this.add.text(630, 300, 'Game Set', { fontSize: '64px', fill: '#000' });
     gameSetText = this.add.text(630, 300, 'Start!', { fontSize: '64px', fill: '#000' });
@@ -268,17 +303,19 @@ function update ()
     // console.log(gameSetEvent.getElapsed());
     cloudsWhite.tilePositionX += 0.5;
     cloudsWhiteSmall.tilePositionX += 0.25;
-
+    this.physics.world.wrap(player, 48);
     // moves player left
     if (cursors.left.isDown)    {
         player.setVelocityX(-250);
         // player.setX(50);
+        player.setSize(50, 100);
         player.anims.play('left', true);
         player.flipX=true;
     } 
     // moves player right
     else if (cursors.right.isDown)   {
         player.setVelocityX(250);
+        player.setSize(50, 100);
         player.anims.play('right', true);
         player.flipX=false;
     }
@@ -313,6 +350,7 @@ function update ()
         player.setVelocityY(0);
         // player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x + 30, player.y, 'girlslashstatic');
+        slash.setSize(65, 100);
 
         this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit1, null, this);
@@ -330,6 +368,8 @@ function update ()
         player.setVelocityY(0);
         // player.anims.play('space', true);
         slash = this.physics.add.sprite(player.x - 30, player.y, 'girlslashstatic');
+        slash.setSize(65, 100);
+
         this.physics.add.overlap(slash, mob, mobHit, null, this);
         this.physics.add.overlap(slash, mob1, mobHit1, null, this);
         this.physics.add.overlap(slash, mob2, mobHit2, null, this);
@@ -342,6 +382,7 @@ function update ()
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)   {
         player.setVelocityX(0);
         player.setVelocityY(0);
+        player.setSize(40, 100);
         player.anims.play('turn');
         slash.destroy();
     }
@@ -349,22 +390,74 @@ function update ()
     // clearMobTintEvent = this.time.delayedCall(100, mobClearTint, [], this);
 
     // this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+    // if (this.physics.add.overlap(player, mush1, mobEat, null, this)) {
+        // console.log('true');
+    // }
+
+    // if (player.body.touching.right) {
+    //     console.log('touching');
+    // }
+    // console.log(player.body.touching.down);
+
     if (mobH < 1000)    {
-        this.physics.accelerateToObject(mob, player, 100, 100, 100);
+        // this.physics.accelerateToObject(mob, player, 100, 100, 100);
+        this.physics.accelerateToObject(mob, mush1, 100, 100, 100);
+        if (mob.body.touching.left || mob.body.touching.right || mob.body.touching.up || mob.body.touching.down)   {
+            // console.log('hurt mush');
+            mush1H += 1;
+            // mush1Text.setText('MushH: ' + mush1H);
+            if (mush1H > 2000)  {
+                mush1.destroy();
+                destroyedMush += 1;
+            }
+        }
+        
     }
     if (mob1H < 1000)    {
-        this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+        // this.physics.accelerateToObject(mob1, player, 100, 100, 100);
+        this.physics.accelerateToObject(mob1, mush2, 100, 100, 100);
+        if (mob1.body.touching.left || mob1.body.touching.right || mob1.body.touching.up || mob1.body.touching.down)   {
+            // console.log('hurt mush');
+            mush2H += 1;
+            // mush1Text.setText('MushH: ' + mush1H);
+            if (mush2H > 2000)  {
+                mush2.destroy();
+                destroyedMush += 1;
 
+            }
+        }
     }
     if (mob2H < 1000)    {
-        this.physics.accelerateToObject(mob2, player, 100, 100, 100);
+        // this.physics.accelerateToObject(mob2, player, 100, 100, 100);
+        this.physics.accelerateToObject(mob2, mush3, 100, 100, 100);
+        if (mob2.body.touching.left || mob2.body.touching.right || mob2.body.touching.up || mob2.body.touching.down)   {
+            // console.log('hurt mush');
+            mush3H += 1;
+            // mush1Text.setText('MushH: ' + mush1H);
+            if (mush3H > 2000)  {
+                mush3.destroy();
+                destroyedMush += 1;
 
+            }
+        }
     }
     if (mob3H < 1000)    {
-        this.physics.accelerateToObject(mob3, player, 100, 100, 100);
+        // this.physics.accelerateToObject(mob3, player, 100, 100, 100);
+        this.physics.accelerateToObject(mob3, mush4, 100, 100, 100);
+        if (mob3.body.touching.left || mob3.body.touching.right || mob3.body.touching.up || mob3.body.touching.down)   {
+            // console.log('hurt mush');
+            mush4H += 1;
+            // mush1Text.setText('MushH: ' + mush1H);
+            if (mush4H == 2000)  {
+                mush4.destroy();
+                destroyedMush += 1;
 
+            }
+        }
     }
      
+
+
     // I need to make each mob independant of each other.
     if (mobH >= 1000)  {
         mob.setActive(false).setVisible(false);
@@ -389,6 +482,19 @@ function update ()
         var gameOverText = this.add.text(630, 300, 'VICTORY!', { fontSize: '64px', fill: '#000' });
         gameOver = true;
     }
+    console.log(destroyedMush);
+        // defeat method.
+    if (destroyedMush >= 1) {
+        this.physics.pause();
+        var gameOverText = this.add.text(630, 300, 'DEFEAT!', { fontSize: '64px', fill: '#000' });
+        gameOver = true;
+    }
+}
+
+function mobEat()   {
+    // mush1H += .001;
+    // mush1Text.setText('MushH:: ' + mush1H);
+    console.log('true in function');
 }
 
 function slashEventM()   {
@@ -410,7 +516,7 @@ function mobHit (slash, mob)
 {
     score += 10;
     scoreText.setText('Score: ' + score);
-    mobHText.setText('mobH: ' + mobH);
+    // mobHText.setText('mobH: ' + mobH);
     mobH += 10;
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
@@ -422,7 +528,7 @@ function mobHit1 (slash, mob)
 {
     score += 10;
     scoreText.setText('Score: ' + score);
-    mobHText.setText('mobH: ' + mobH);
+    // mobHText.setText('mobH: ' + mobH);
     mob1H += 10;
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
@@ -434,7 +540,7 @@ function mobHit2 (slash, mob)
 {
     score += 10;
     scoreText.setText('Score: ' + score);
-    mobHText.setText('mobH: ' + mobH);
+    // mobHText.setText('mobH: ' + mobH);
     mob2H += 10;
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
     clearMobTintEvent = this.time.delayedCall(1000, mobClearTint, [], this);
@@ -446,7 +552,7 @@ function mobHit3 (slash, mob)
 {
     score += 10;
     scoreText.setText('Score: ' + score);
-    mobHText.setText('mobH: ' + mobH);
+    // mobHText.setText('mobH: ' + mobH);
     mob3H += 10;
     
     mobSetTintEvent = this.time.delayedCall(0, mobSetTint, [mob], this);
