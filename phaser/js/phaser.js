@@ -21,6 +21,7 @@ var config = {
 var player;
 
 // Physical World sprites
+var mushFix;
 var mush1, mush2, mush3, mush4, bush1, bush2, dirt1;
 var mush1H = 0;
 var mush2H = 0;
@@ -144,6 +145,7 @@ function create ()
     mush1.setPushable(false);
     // mush1Text = this.add.text(380, 270, 'score: 0', { fontSize: '20px', fill: '#000' });
 
+    dirt1 = this.physics.add.sprite(90,720, 'dirt01').setScale(.1,.1);
 
     mush2 = this.physics.add.sprite(800,800, 'mushroom02').setScale(.2,.2);
     mush2.setPushable(false);
@@ -154,8 +156,10 @@ function create ()
     mush4 = this.physics.add.sprite(100,700, 'mushroom02').setScale(.1,.1);
     mush4.setPushable(false);
 
-    dirt1 = this.physics.add.sprite(90,720, 'dirt01').setScale(.1,.1);
 
+    mushFix = this.physics.add.sprite(1145,355, 'mushroom02').setScale(.2,.2);
+    bush1 = this.physics.add.sprite(710,400, 'bush01').setScale(.2, .2);
+    bush2 = this.physics.add.sprite(785,400, 'bush01').setScale(.2, .2);
 
     // The player and its settings
     // player = this.physics.add.sprite(600, 1050, 'dude');
