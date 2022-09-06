@@ -70,7 +70,12 @@ var timer;
 
 // game over vars
 var destroyedMush = 0;
-var game = new Phaser.Game(config);
+
+// music vars
+var mainTheme;
+
+// create the actual game
+var game = new Phaser.Game(config)
 
 function preload ()
 {
@@ -97,11 +102,15 @@ function preload ()
     this.load.spritesheet('girlslashstatic', 'assets/slash_still2.png', { frameWidth: 240, frameHeight: 240 });
     // this.load.spritesheet('girlslash', 'assets/mush_girl_slash_copy.png', { frameWidth: 82, frameHeight: 62 });
     this.load.spritesheet('girlslash', 'assets/slashanims.png', { frameWidth: 319, frameHeight: 240 });
-
+    this.load.audio('maintheme', ['assets/mushy_girl_phaser.mp3']);
 }
 
 function create ()
 {
+    // music stuff
+    mainTheme = this.sound.add('maintheme', { loop: true});
+    mainTheme.play();
+
     this.cameras.main.setBounds(0,0, 1600, 900);
     // sets hard world bounds.. Probably better to use this instead of colliders to seperate the player from other things.
     this.physics.world.setBounds(0,0, 1600, 900);
@@ -110,23 +119,9 @@ function create ()
     background = this.add.image(800, 100, 'sky');
     background.setScale(2, 1);
 
-    // some background testing stuff
-    // mainBack = this.add.image(800, 100, 'cloudsmain');
-    // mainBack.setScale(3,2);
-    // multiBack = this.add.image(800, 100, 'cloudsmulti');
-    // multiBack.setScale(1,1);
-    // mainBack = this.add.tileSprite(800, 100, 1600, 289, 'cloudsmain');
-    // mainBack.setScale(1,2);
-    // multiBack = this.add.tileSprite(800, 100, 1600, 780, 'cloudsmulti');
-
     // these are transparent pngs
     cloudsWhite = this.add.tileSprite(800, 200, 1600, 400, "clouds-white");
     cloudsWhiteSmall = this.add.tileSprite(800, 200, 1600, 400, "clouds-white-small");
-
-    // green rectangle, will replace with actual ground, and assests, and such.
-    // var platforms = this.physics.add.staticGroup();
-    // platforms.create(800, 870, 'ground').setScale(5, 30).refreshBody();
-
 
     // Actual drawn background... It looks so good!
     playerGround = this.physics.add.staticGroup();
